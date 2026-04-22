@@ -38,6 +38,7 @@ const shouldRetryDashboardQuery = (failureCount: number, error: Error) => {
 
 const DASHBOARD_QUERY_OPTIONS = {
   staleTime: 30_000,
+  initialDataUpdatedAt: 0,
   gcTime: 5 * 60_000,
   refetchOnWindowFocus: false,
   refetchOnReconnect: false,
