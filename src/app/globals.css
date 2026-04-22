@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --app-bg: #06030f;
+  --app-surface: rgba(24, 16, 44, 0.64);
+  --app-surface-strong: rgba(32, 22, 58, 0.84);
+  --app-border: rgba(255, 255, 255, 0.12);
+  --app-text-primary: #ffffff;
+  --app-text-secondary: #b9b2d6;
+  --app-text-muted: #8d86a8;
+  --app-accent: #ff2ea6;
+  --app-accent-soft: #df2ef9;
+  --app-accent-bg: rgba(255, 46, 166, 0.12);
+  --app-success: #22c55e;
+  --app-warning: #f59e0b;
+  --app-danger: #ef4444;
+}
+
+@theme inline {
+  --font-sans: var(--font-plus-jakarta);
+  --font-display: var(--font-sora);
+  --color-app-bg: var(--app-bg);
+  --color-app-surface: var(--app-surface);
+  --color-app-surface-strong: var(--app-surface-strong);
+  --color-app-border: var(--app-border);
+  --color-app-text-primary: var(--app-text-primary);
+  --color-app-text-secondary: var(--app-text-secondary);
+  --color-app-text-muted: var(--app-text-muted);
+  --color-app-accent: var(--app-accent);
+  --color-app-accent-soft: var(--app-accent-soft);
+  --color-app-accent-bg: var(--app-accent-bg);
+  --color-app-success: var(--app-success);
+  --color-app-warning: var(--app-warning);
+  --color-app-danger: var(--app-danger);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 15% 12%, rgba(255, 46, 166, 0.24), transparent 38%),
+    radial-gradient(circle at 85% 12%, rgba(132, 48, 255, 0.22), transparent 36%),
+    radial-gradient(circle at 50% 100%, rgba(96, 32, 160, 0.18), transparent 42%),
+    var(--app-bg);
+  color: var(--app-text-primary);
+  font-family: var(--font-plus-jakarta), "Segoe UI", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.glass-card {
+  background: linear-gradient(
+    135deg,
+    rgba(28, 18, 52, 0.78),
+    rgba(20, 14, 38, 0.76)
+  );
+  border: 1px solid var(--app-border);
+  box-shadow:
+    0 0 0 1px rgba(255, 46, 166, 0.04) inset,
+    0 16px 40px rgba(7, 2, 20, 0.6);
+  backdrop-filter: blur(10px);
+}
+
+.accent-glow {
+  box-shadow:
+    0 0 0 1px rgba(255, 46, 166, 0.2) inset,
+    0 8px 24px rgba(255, 46, 166, 0.22);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 46, 166, 0.4);
+  border-radius: 999px;
+}

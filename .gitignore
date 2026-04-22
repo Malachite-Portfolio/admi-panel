@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+npm-debug.log*
+
+.env
+.env.*
+!.env.example
+
+.vercel/
+admin-panel-dev.log
+tsconfig.tsbuildinfo
+
+.DS_Store
