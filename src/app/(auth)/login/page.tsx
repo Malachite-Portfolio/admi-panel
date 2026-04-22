@@ -16,7 +16,7 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginPayload>({
     defaultValues: {
-      emailOrPhone: "",
+      loginId: "",
       password: "",
     },
   });
@@ -43,20 +43,21 @@ export default function LoginPage() {
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <label className="mb-2 block text-sm text-app-text-secondary">
-              Email / Phone
+              Admin Login ID
             </label>
             <div className="relative">
               <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-app-text-muted" />
               <Input
-                {...register("emailOrPhone", {
-                  required: "Email or phone is required",
+                {...register("loginId", {
+                  required: "Admin login ID is required",
+                  setValueAs: (value) => String(value || "").trim(),
                 })}
                 className="pl-9"
-                placeholder="Enter email or phone"
+                placeholder="Enter admin login ID"
               />
             </div>
-            {errors.emailOrPhone ? (
-              <p className="mt-1 text-xs text-app-danger">{errors.emailOrPhone.message}</p>
+            {errors.loginId ? (
+              <p className="mt-1 text-xs text-app-danger">{errors.loginId.message}</p>
             ) : null}
           </div>
 

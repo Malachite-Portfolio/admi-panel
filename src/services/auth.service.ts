@@ -4,6 +4,8 @@ import type { ApiResponse, AuthSession, LoginPayload } from "@/types";
 import type { AdminRole } from "@/types";
 
 const AUTH_DEBUG_ENABLED = process.env.NODE_ENV !== "production";
+const LEGACY_LOGIN_FIELD_RETRY_ENABLED =
+  process.env.NEXT_PUBLIC_ADMIN_LEGACY_LOGIN_FIELD_RETRY !== "false";
 
 function sanitizeAuthDebugValue(value: unknown): unknown {
   if (Array.isArray(value)) {
@@ -85,10 +87,16 @@ function normalizeRole(value?: string): AdminRole {
 
 function mapSessionResponse(rawData: Record<string, unknown>, fallbackLoginId: string): AuthSession {
   const user = (rawData.user as Record<string, unknown> | undefined) ?? rawData;
+  const accessToken = String(rawData.accessToken ?? rawData.token ?? "");
+  const refreshToken = String(rawData.refreshToken ?? "");
+
+  if (!accessToken) {
+    throw new Error("Admin login response did not include an access token.");
+  }
 
   return {
-    accessToken: String(rawData.accessToken ?? rawData.token ?? ""),
-    refreshToken: String(rawData.refreshToken ?? ""),
+    accessToken,
+    refreshToken,
     role: normalizeRole(String(rawData.role ?? user.role ?? "admin")),
     adminId: String(user.id ?? rawData.adminId ?? "admin-local"),
     name: String(user.displayName ?? user.name ?? "Admin"),
@@ -96,12 +104,33 @@ function mapSessionResponse(rawData: Record<string, unknown>, fallbackLoginId: s
   };
 }
 
+function unwrapAuthData(payload: ApiResponse<Record<string, unknown>> | Record<string, unknown>) {
+  if (payload && typeof payload === "object" && "data" in payload) {
+    return ((payload as ApiResponse<Record<string, unknown>>).data ?? {}) as Record<
+      string,
+      unknown
+    >;
+  }
+
+  return payload as Record<string, unknown>;
+}
+
+function isLoginPayloadRejected(error: unknown) {
+  const typedError = error as {
+    response?: {
+      status?: number;
+    };
+  };
+
+  return typedError.response?.status === 400 || typedError.response?.status === 422;
+}
+
 export const authService = {
   async login(payload: LoginPayload): Promise<AuthSession> {
-    const emailOrPhone = payload.emailOrPhone.trim();
+    const loginId = payload.loginId.trim();
     const password = payload.password;
     const requestBody = {
-      phoneOrEmail: emailOrPhone,
+      loginId,
       password,
     };
 
@@ -114,8 +143,35 @@ export const authService = {
       );
       logAuthResponse("login", response);
 
-      return mapSessionResponse(response.data.data, emailOrPhone);
+      return mapSessionResponse(unwrapAuthData(response.data), loginId);
     } catch (error) {
+      if (LEGACY_LOGIN_FIELD_RETRY_ENABLED && isLoginPayloadRejected(error)) {
+        const legacyRequestBody = {
+          phoneOrEmail: loginId,
+          password,
+        };
+
+        logAuthRequest("login legacy field retry", API_ENDPOINTS.auth.login, legacyRequestBody);
+
+        try {
+          const response = await api.post<ApiResponse<Record<string, unknown>>>(
+            API_ENDPOINTS.auth.login,
+            legacyRequestBody,
+          );
+          logAuthResponse("login legacy field retry", response);
+
+          return mapSessionResponse(unwrapAuthData(response.data), loginId);
+        } catch (legacyError) {
+          logAuthError(
+            "login legacy field retry",
+            API_ENDPOINTS.auth.login,
+            legacyRequestBody,
+            legacyError,
+          );
+          throw legacyError;
+        }
+      }
+
       logAuthError("login", API_ENDPOINTS.auth.login, requestBody, error);
       throw error;
     }

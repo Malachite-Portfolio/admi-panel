@@ -39,6 +39,7 @@ npm run dev
 3. Add:
    - `NEXT_PUBLIC_API_BASE_URL=https://clarivoice-backend-final-1032786255556.asia-south1.run.app`
    - `NEXT_PUBLIC_SOCKET_URL=https://clarivoice-backend-final-1032786255556.asia-south1.run.app`
+   - `NEXT_PUBLIC_ADMIN_LEGACY_LOGIN_FIELD_RETRY=true`
 4. Save and redeploy the project.
 
 If your Cloud Run URL changes, update both variables and redeploy.

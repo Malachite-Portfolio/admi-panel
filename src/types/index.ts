@@ -16,7 +16,7 @@ export type PaginatedResponse<T> = {
 export type AdminRole = "super_admin" | "admin" | "support_manager";
 
 export type LoginPayload = {
-  emailOrPhone: string;
+  loginId: string;
   password: string;
 };
 
